@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Command;
 
 use League\Csv\Reader;
@@ -32,8 +34,8 @@ class UpdateContactCommand extends Command
         $countContacts = $this->processContacts();
         $deleteContacts = $this->deleteContacts();
 
-        $this->io->info('Created/Updated: ' . $countContacts);
-        $this->io->info('Deleted: ' . $deleteContacts);
+        $this->io->info('Created/Updated: '.$countContacts);
+        $this->io->info('Deleted: '.$deleteContacts);
 
         // Process organizations
         // @TODO : Create or update organizations based on the CSV data
@@ -65,7 +67,7 @@ class UpdateContactCommand extends Command
 
             // @TODO : Create or update contact based on the CSV data
 
-            $count++;
+            ++$count;
         }
         $progress->finish();
 

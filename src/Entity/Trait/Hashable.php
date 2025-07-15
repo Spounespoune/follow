@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity\Trait;
 
 use App\Entity\HashableInterface;
@@ -8,13 +10,13 @@ trait Hashable
 {
     public function hash(): string
     {
-        $checkString = "";
+        $checkString = '';
 
         $arr = (array) $this;
         ksort($arr);
 
         foreach ($arr as $k => $v) {
-            $checkString .= sprintf("[%s:%s]", $k, $v);
+            $checkString .= sprintf('[%s:%s]', $k, $v);
         }
 
         return sha1($checkString);
