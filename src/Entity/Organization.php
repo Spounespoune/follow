@@ -7,7 +7,7 @@ namespace App\Entity;
 use App\Entity\Trait\Hashable;
 use App\Entity\Trait\SoftDeletable;
 use App\Entity\Trait\Timestampable;
-use App\Repository\OrganizationRepository;
+use App\Infrastructure\ForProduction\Repository\OrganizationRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
