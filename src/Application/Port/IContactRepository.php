@@ -8,7 +8,13 @@ use App\Entity\Contact;
 
 interface IContactRepository
 {
-    public function findById(int $id): ?Contact;
+    public function findByPpIdentifier(string $ppIdentifier): ?Contact;
+
+    public function findContactsNotUpdatedSinceWeek(int $dayForDeletion, \DateTimeImmutable $executionDatetime): array;
+
+    public function delete(Contact $contact): void;
 
     public function save(Contact $contact): void;
+
+    public function clear(): void;
 }

@@ -15,6 +15,7 @@
 /phpunit.xml
 .phpunit.result.cache
 /bin/phpunit
+/.phpunit.cache/
 ###< phpunit/phpunit ###
 
 ###> friendsofphp/php-cs-fixer ###

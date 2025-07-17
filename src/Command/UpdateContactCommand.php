@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use League\Csv\Reader;
+use App\Application\Message\Contact\DeleteContactMessage;
+use App\Service\Import\ContactProcessors;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Stamp\HandledStamp;
 
 #[AsCommand(
     name: 'app:update-contact',
@@ -20,8 +22,10 @@ class UpdateContactCommand extends Command
 {
     private ?SymfonyStyle $io;
 
-    public function __construct()
-    {
+    public function __construct(
+        private readonly MessageBusInterface $messageBus,
+        private readonly ContactProcessors $contactProcessors,
+    ) {
         parent::__construct();
     }
 
@@ -31,7 +35,8 @@ class UpdateContactCommand extends Command
 
         // Process contacts
         $this->io->section('Processing Contacts');
-        $countContacts = $this->processContacts();
+        // $countContacts = $this->processContacts($this->io);
+        $countContacts = 0;
         $deleteContacts = $this->deleteContacts();
 
         $this->io->info('Created/Updated: '.$countContacts);
@@ -52,35 +57,18 @@ class UpdateContactCommand extends Command
         return Command::SUCCESS;
     }
 
-    private function processContacts(): int
+    private function processContacts(SymfonyStyle $io): int
     {
-        $this->io->writeln('Updating contacts');
-        $progress = new ProgressBar($this->io);
-        $progress->setFormat('debug_nomax');
-
-        $count = 0;
-        $reader = Reader::createFromPath('files/contacts.csv');
-        $records = $reader->getRecords();
-
-        foreach ($records as $i => $item) {
-            $progress->advance();
-
-            // @TODO : Create or update contact based on the CSV data
-
-            ++$count;
-        }
-        $progress->finish();
-
-        return $count;
+        return $this->contactProcessors->processContacts($io);
     }
 
     private function deleteContacts(): int
     {
         $this->io->writeln('Deleting contacts');
-        $count = 0;
 
-        // @TODO : Create a query to soft delete contacts if updated_at has not changed since 1 week
+        $deleteContactMessage = new DeleteContactMessage();
+        $envelope = $this->messageBus->dispatch($deleteContactMessage);
 
-        return $count;
+        return $envelope->last(HandledStamp::class)->getResult();
     }
 }

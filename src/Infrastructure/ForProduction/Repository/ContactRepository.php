@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\ForProduction\Repository;
 
+use App\Application\Port\IContactRepository;
 use App\Entity\Contact;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -11,35 +12,50 @@ use Doctrine\Persistence\ManagerRegistry;
 /**
  * @extends ServiceEntityRepository<Contact>
  */
-class ContactRepository extends ServiceEntityRepository
+class ContactRepository extends ServiceEntityRepository implements IContactRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Contact::class);
     }
 
-    //    /**
-    //     * @return Contact[] Returns an array of Contact objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('c')
-    //            ->andWhere('c.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('c.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function findByPpIdentifier(string $ppIdentifier): ?Contact
+    {
+        $query = $this->createQueryBuilder('c')
+            ->where('c.ppIdentifier = :ppIdentifier')
+            ->setParameter('ppIdentifier', $ppIdentifier)
+            ->getQuery();
 
-    //    public function findOneBySomeField($value): ?Contact
-    //    {
-    //        return $this->createQueryBuilder('c')
-    //            ->andWhere('c.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        return $query->getOneOrNullResult();
+    }
+
+    public function findContactsNotUpdatedSinceWeek(int $dayForDeletion, \DateTimeImmutable $executionDatetime): array
+    {
+        $query = $this->createQueryBuilder('c')
+            ->where('c.updatedAt < :executionDate')
+            ->setParameter('executionDate', $executionDatetime->modify('-'.$dayForDeletion.' days'))
+            ->getQuery();
+
+        return $query->getResult();
+    }
+
+    public function delete(Contact $contact): void
+    {
+        $em = $this->getEntityManager();
+        $em->remove($contact);
+        $em->flush();
+    }
+
+    public function save(Contact $contact): void
+    {
+        $em = $this->getEntityManager();
+        // TODO: Not performant - persist() is unnecessary for updates
+        $em->persist($contact);
+        $em->flush();
+    }
+
+    public function clear(): void
+    {
+        $this->getEntityManager()->clear();
+    }
 }

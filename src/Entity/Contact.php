@@ -58,6 +58,24 @@ class Contact implements HashableInterface
         $this->organizations = new ArrayCollection();
     }
 
+    public static function create(
+        string $ppIdentifier,
+        string $familyName,
+        ?string $ppIdentifierType = null,
+        ?string $firstName = null,
+        ?string $title = null,
+    ): Contact {
+        $contact = new Contact();
+
+        return $contact
+            ->setPpIdentifier($ppIdentifier)
+            ->setPpIdentifierType($ppIdentifierType)
+            ->setTitle($title)
+            ->setFirstName($firstName)
+            ->setFamilyName($familyName)
+        ;
+    }
+
     public function getId(): ?int
     {
         return $this->id;

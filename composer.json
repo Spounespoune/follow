@@ -14,6 +14,7 @@
         "league/csv": "^9.24",
         "stof/doctrine-extensions-bundle": "*",
         "symfony/console": "7.3.*",
+        "symfony/doctrine-messenger": "7.3.*",
         "symfony/dotenv": "7.3.*",
         "symfony/flex": "^2",
         "symfony/framework-bundle": "7.3.*",

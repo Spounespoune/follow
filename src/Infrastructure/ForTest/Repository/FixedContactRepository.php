@@ -13,16 +13,30 @@ class FixedContactRepository implements IContactRepository
     {
     }
 
-    public function findById(int $id): ?Contact
+    public function findByPpIdentifier(string $ppIdentifier): ?Contact
     {
-        return array_find($this->database, fn ($contact) => $contact->getId() === $id);
+        return array_find($this->database, fn (Contact $contact) => $contact->getPpIdentifier() === $ppIdentifier);
+    }
+
+    public function findContactsNotUpdatedSinceWeek(int $dayForDeletion, \DateTimeImmutable $executionDatetime): array
+    {
+        return array_filter($this->database, fn (Contact $contact) => $contact->updatedAt->modify('+'.$dayForDeletion.' days') <= $executionDatetime);
+    }
+
+    public function delete(Contact $contact): void
+    {
+        $this->database = array_filter(
+            $this->database,
+            fn (Contact $contact) => !($contact->getId() === $contact->getId()));
     }
 
     public function save(Contact $contact): void
     {
-        $id = count($this->database) + 1;
-        $contact->setId($id);
-
         $this->database[] = $contact;
+    }
+
+    public function clear(): void
+    {
+        // Nothing
     }
 }
