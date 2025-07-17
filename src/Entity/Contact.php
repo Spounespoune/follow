@@ -19,9 +19,9 @@ class Contact implements HashableInterface
     use SoftDeletable;
     use Timestampable;
 
-    public const PP_IDENTIFIER_TYPE_ADELI = 0;
-    public const PP_IDENTIFIER_TYPE_RPPS = 8;
-    public const PP_IDENTIFIER_TYPES = [self::PP_IDENTIFIER_TYPE_RPPS, self::PP_IDENTIFIER_TYPE_ADELI];
+    public const int PP_IDENTIFIER_TYPE_ADELI = 0;
+    public const int PP_IDENTIFIER_TYPE_RPPS = 8;
+    public const array PP_IDENTIFIER_TYPES = [self::PP_IDENTIFIER_TYPE_RPPS, self::PP_IDENTIFIER_TYPE_ADELI];
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -51,7 +51,7 @@ class Contact implements HashableInterface
     #[ORM\JoinColumn(name: 'contact_id', referencedColumnName: 'id')]
     #[ORM\InverseJoinColumn(name: 'organization_id', referencedColumnName: 'id')]
     #[Assert\Valid]
-    private $organizations;
+    private ArrayCollection $organizations;
 
     public function __construct()
     {
@@ -88,75 +88,60 @@ class Contact implements HashableInterface
         return $this;
     }
 
-    public function getPpIdentifier()
+    public function getPpIdentifier(): ?string
     {
         return $this->ppIdentifier;
     }
 
-    /**
-     * @return Contact
-     */
-    public function setPpIdentifier($ppIdentifier)
+    public function setPpIdentifier($ppIdentifier): static
     {
         $this->ppIdentifier = $ppIdentifier;
 
         return $this;
     }
 
-    public function getPpIdentifierType()
+    public function getPpIdentifierType(): ?int
     {
         return $this->ppIdentifierType;
     }
 
-    /**
-     * @return Contact
-     */
-    public function setPpIdentifierType($ppIdentifierType)
+    public function setPpIdentifierType($ppIdentifierType): static
     {
         $this->ppIdentifierType = $ppIdentifierType;
 
         return $this;
     }
 
-    public function getTitle()
+    public function getTitle(): ?string
     {
         return $this->title;
     }
 
-    /**
-     * @return Contact
-     */
-    public function setTitle($title)
+    public function setTitle($title): static
     {
         $this->title = $title;
 
         return $this;
     }
 
-    public function getFirstName()
+    public function getFirstName(): ?string
     {
         return $this->firstName;
     }
 
-    /**
-     * @return Contact
-     */
-    public function setFirstName($firstName)
+    public function setFirstName($firstName): static
     {
         $this->firstName = $firstName;
 
         return $this;
     }
 
-    public function getFamilyName()
+    public function getFamilyName(): ?string
     {
         return $this->familyName;
     }
 
-    /**
-     * @return Contact
-     */
-    public function setFamilyName($familyName)
+    public function setFamilyName($familyName): static
     {
         $this->familyName = $familyName;
 
