@@ -25,9 +25,8 @@ class FixedContactRepository implements IContactRepository
 
     public function delete(Contact $contact): void
     {
-        $this->database = array_filter(
-            $this->database,
-            fn (Contact $contact) => !($contact->getId() === $contact->getId()));
+        $contactInDatabase = array_find($this->database, fn (Contact $contact) => $contact->getPpIdentifier() === $contact->getPpIdentifier());
+        $contactInDatabase->deletedAt = new \DateTimeImmutable();
     }
 
     public function save(Contact $contact): void

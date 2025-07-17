@@ -1,8 +1,9 @@
 <?php
 
-namespace Units\MessageHandler;
+declare(strict_types=1);
 
-use App\Application\Message\Contact\CreateContactBatchMessage;
+namespace App\Tests\Units\MessageHandler;
+
 use App\Application\Message\Contact\UpdateContactMessage;
 use App\Application\MessageHandler\UpdateContactHandler;
 use App\Entity\Contact;
@@ -37,7 +38,7 @@ class UpdateContactHandlerTest extends TestCase
         /** @var Contact $contact */
         $contact = $this->contactRepository->findByPpIdentifier('10000001015');
 
-        $this->assertNotNull($contact);;
+        $this->assertNotNull($contact);
         $this->assertEquals('family_name_test_update', $contact->getFamilyName());
     }
 }

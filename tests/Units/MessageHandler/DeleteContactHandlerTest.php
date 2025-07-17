@@ -1,11 +1,11 @@
 <?php
 
-namespace Units\MessageHandler;
+declare(strict_types=1);
 
-use App\Application\Message\Contact\CreateContactBatchMessage;
+namespace App\Tests\Units\MessageHandler;
+
 use App\Application\Message\Contact\DeleteContactMessage;
 use App\Application\MessageHandler\DeleteContactHandler;
-use App\Application\MessageHandler\UpdateContactHandler;
 use App\Entity\Contact;
 use App\Infrastructure\ForTest\Repository\FixedContactRepository;
 use PHPUnit\Framework\TestCase;
@@ -29,32 +29,31 @@ class DeleteContactHandlerTest extends TestCase
 
     public function testDeleteContactWhenUpdatedSinceOneWeekAgo()
     {
-        $deleteMessage = new DeleteContactMessage(7, new \DateTimeImmutable('2022-01-08'));
+        $deleteMessage = new DeleteContactMessage(executionDate: new \DateTimeImmutable('2022-01-08'));
         ($this->deleteContactHandler)($deleteMessage);
 
         /** @var Contact $contact */
         $contact = $this->contactRepository->findByPpIdentifier('10000001015');
 
-        $this->assertNull($contact);
+        $this->assertNotNull($contact->deletedAt);
     }
 
     public function testNoDeleteContactWhenUpdatedLessThanOneWeekAgo()
     {
-        $deleteMessage = new DeleteContactMessage(7, new \DateTimeImmutable('2022-01-05'));
+        $deleteMessage = new DeleteContactMessage(executionDate: new \DateTimeImmutable('2022-01-05'));
         ($this->deleteContactHandler)($deleteMessage);
 
         /** @var Contact $contact */
         $contact = $this->contactRepository->findByPpIdentifier('10000001015');
 
-        $this->assertNotNull($contact);;
+        $this->assertNull($contact->deletedAt);
     }
 
     public function testDeleteOneContact()
     {
-        $deleteMessage = new DeleteContactMessage(7, new \DateTimeImmutable('2022-01-08'));
+        $deleteMessage = new DeleteContactMessage(executionDate: new \DateTimeImmutable('2022-01-08'));
         $countContacteDeleted = ($this->deleteContactHandler)($deleteMessage);
 
         $this->assertEquals(1, $countContacteDeleted);
     }
-
 }

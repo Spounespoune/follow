@@ -48,6 +48,10 @@ readonly class UpdateContactHandler
             $contactRecord->setTitle($contact->getTitle());
         }
 
+        if (null !== $contactRecord->deletedAt) {
+            $contactRecord->deletedAt = null;
+        }
+
         try {
             $this->contactRepository->save($contact);
         } catch (\Exception $e) {

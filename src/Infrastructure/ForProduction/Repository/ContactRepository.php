@@ -33,6 +33,7 @@ class ContactRepository extends ServiceEntityRepository implements IContactRepos
     {
         $query = $this->createQueryBuilder('c')
             ->where('c.updatedAt < :executionDate')
+            ->andWhere('c.deletedAt IS NULL')
             ->setParameter('executionDate', $executionDatetime->modify('-'.$dayForDeletion.' days'))
             ->getQuery();
 
@@ -41,9 +42,8 @@ class ContactRepository extends ServiceEntityRepository implements IContactRepos
 
     public function delete(Contact $contact): void
     {
-        $em = $this->getEntityManager();
-        $em->remove($contact);
-        $em->flush();
+        $contact->deletedAt = new \DateTimeImmutable();
+        $this->save($contact);
     }
 
     public function save(Contact $contact): void
