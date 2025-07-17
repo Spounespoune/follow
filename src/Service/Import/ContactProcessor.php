@@ -13,7 +13,7 @@ use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-readonly class ContactProcessors
+readonly class ContactProcessor
 {
     public function __construct(
         private MessageBusInterface $messageBus,
