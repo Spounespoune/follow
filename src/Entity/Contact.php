@@ -30,21 +30,21 @@ class Contact implements HashableInterface
 
     #[ORM\Column(name: 'pp_identifier', type: 'string', length: 11, nullable: false)]
     #[Assert\Length(min: '8', max: '11')]
-    private $ppIdentifier;
+    private string $ppIdentifier;
 
     #[ORM\Column(name: 'pp_identifier_type', type: 'smallint', nullable: true)]
     #[Assert\Choice(choices: Contact::PP_IDENTIFIER_TYPES)]
-    private $ppIdentifierType;
+    private ?int $ppIdentifierType;
 
     #[ORM\Column(name: 'title', type: 'string', nullable: true)]
-    private $title;
+    private ?string $title;
 
     #[ORM\Column(name: 'first_name', type: 'string', nullable: true)]
-    private $firstName;
+    private ?string $firstName;
 
     #[ORM\Column(name: 'family_name', type: 'string', nullable: false)]
     #[Assert\NotBlank]
-    private $familyName;
+    private ?string $familyName;
 
     #[ORM\ManyToMany(targetEntity: Organization::class, cascade: ['persist'])]
     #[ORM\JoinTable(name: 'contact_organizations')]
