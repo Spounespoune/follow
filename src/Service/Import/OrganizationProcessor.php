@@ -105,7 +105,7 @@ readonly class OrganizationProcessor
         $zipCode = $record[self::ZIPCODE];
         $city = $record[self::CITY];
 
-        if ($this->contactExistInDatabase($record[self::TECHNICAL_ID])) {
+        if ($this->organizationExistInDatabase($record[self::TECHNICAL_ID])) {
             return new UpdateOrganizationMessage(
                 $technicalId,
                 $name,
@@ -132,7 +132,7 @@ readonly class OrganizationProcessor
         }
     }
 
-    private function contactExistInDatabase(string $ppIdentifier): bool
+    private function organizationExistInDatabase(string $ppIdentifier): bool
     {
         $contactRecord = $this->organizationRepository->findByTechnicalId($ppIdentifier);
 
