@@ -157,4 +157,28 @@ class Contact implements HashableInterface
 
         return $this;
     }
+
+    public function addOrganization(Organization $organization): void
+    {
+        $this->organizations->add($organization);
+    }
+
+    public function removeOrganization(Organization $organization): void
+    {
+        $this->organizations->removeElement($organization);
+    }
+
+    public function hasOrganization(Organization $organization): bool
+    {
+        return $this->organizations->contains($organization);
+    }
+
+    public function hasOrganizationWithTechnicalId(string $technicalId): bool
+    {
+        if (array_any((array) $this->organizations, fn ($organization) => $organization->getTechnicalId() === $technicalId)) {
+            return true;
+        }
+
+        return false;
+    }
 }
