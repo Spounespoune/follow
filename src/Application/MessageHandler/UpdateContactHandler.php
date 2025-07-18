@@ -18,9 +18,9 @@ readonly class UpdateContactHandler
 
     public function __invoke(UpdateContactMessage $contactMessage): bool
     {
-        $contactRecord = $this->contactRepository->findByPpIdentifier($contactMessage->ppIdentifier);
+        $persisteContact = $this->contactRepository->findByPpIdentifier($contactMessage->ppIdentifier);
 
-        if (null === $contactRecord) {
+        if (null === $persisteContact) {
             throw new \Exception('Contact not found');
         }
 
@@ -32,25 +32,11 @@ readonly class UpdateContactHandler
             $contactMessage->firstName,
         );
 
-        if ($contactRecord->identicalTo($contact)) {
+        if ($persisteContact->identicalTo($contact)) {
             return false;
         }
 
-        if ($contactRecord->getFamilyName() !== $contact->getFamilyName()) {
-            $contactRecord->setFamilyName($contact->getFamilyName());
-        }
-
-        if ($contactRecord->getFirstName() !== $contact->getFirstName()) {
-            $contactRecord->setFirstName($contact->getFirstName());
-        }
-
-        if ($contactRecord->getTitle() !== $contact->getTitle()) {
-            $contactRecord->setTitle($contact->getTitle());
-        }
-
-        if (null !== $contactRecord->deletedAt) {
-            $contactRecord->deletedAt = null;
-        }
+        $this->updateContactFields($persisteContact, $contact);
 
         try {
             $this->contactRepository->save($contact);
@@ -60,5 +46,24 @@ readonly class UpdateContactHandler
         }
 
         return true;
+    }
+
+    public function updateContactFields(Contact $persisteContact, Contact $contact): void
+    {
+        if ($persisteContact->getFamilyName() !== $contact->getFamilyName()) {
+            $persisteContact->setFamilyName($contact->getFamilyName());
+        }
+
+        if ($persisteContact->getFirstName() !== $contact->getFirstName()) {
+            $persisteContact->setFirstName($contact->getFirstName());
+        }
+
+        if ($persisteContact->getTitle() !== $contact->getTitle()) {
+            $persisteContact->setTitle($contact->getTitle());
+        }
+
+        if (null !== $persisteContact->deletedAt) {
+            $persisteContact->deletedAt = null;
+        }
     }
 }
