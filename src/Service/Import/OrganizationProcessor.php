@@ -6,7 +6,7 @@ namespace App\Service\Import;
 
 use App\Application\Message\Organization\CreateOrganizationMessage;
 use App\Application\Message\Organization\UpdateOrganizationMessage;
-use App\Infrastructure\ForProduction\Repository\OrganizationRepository;
+use App\Application\Port\IOrganizationRepository;
 use League\Csv\Reader;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -43,7 +43,7 @@ readonly class OrganizationProcessor
 
     public function __construct(
         private MessageBusInterface $messageBus,
-        private OrganizationRepository $organizationRepository,
+        private IOrganizationRepository $organizationRepository,
     ) {
     }
 

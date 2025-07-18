@@ -6,7 +6,7 @@ namespace App\Service\Import;
 
 use App\Application\Message\Contact\CreateContactMessage;
 use App\Application\Message\Contact\UpdateContactMessage;
-use App\Infrastructure\ForProduction\Repository\ContactRepository;
+use App\Application\Port\IContactRepository;
 use League\Csv\Reader;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -17,7 +17,7 @@ readonly class ContactProcessor
 {
     public function __construct(
         private MessageBusInterface $messageBus,
-        private ContactRepository $contactRepository,
+        private IContactRepository $contactRepository,
     ) {
     }
 
