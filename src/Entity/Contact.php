@@ -51,7 +51,7 @@ class Contact implements HashableInterface
     #[ORM\JoinColumn(name: 'contact_id', referencedColumnName: 'id')]
     #[ORM\InverseJoinColumn(name: 'organization_id', referencedColumnName: 'id')]
     #[Assert\Valid]
-    private ArrayCollection $organizations;
+    private $organizations;
 
     public function __construct()
     {
@@ -65,9 +65,7 @@ class Contact implements HashableInterface
         ?string $firstName = null,
         ?string $title = null,
     ): Contact {
-        $contact = new Contact();
-
-        return $contact
+        return new self()
             ->setPpIdentifier($ppIdentifier)
             ->setPpIdentifierType($ppIdentifierType)
             ->setTitle($title)
