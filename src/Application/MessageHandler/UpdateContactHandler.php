@@ -50,15 +50,15 @@ readonly class UpdateContactHandler
 
     public function updateContactFields(Contact $persisteContact, Contact $contact): void
     {
-        if ($persisteContact->getFamilyName() !== $contact->getFamilyName()) {
+        if (null !== $contact->getFamilyName() && $persisteContact->getFamilyName() !== $contact->getFamilyName()) {
             $persisteContact->setFamilyName($contact->getFamilyName());
         }
 
-        if ($persisteContact->getFirstName() !== $contact->getFirstName()) {
+        if (null !== $contact->getFirstName() && $persisteContact->getFirstName() !== $contact->getFirstName()) {
             $persisteContact->setFirstName($contact->getFirstName());
         }
 
-        if ($persisteContact->getTitle() !== $contact->getTitle()) {
+        if (null !== $contact->getTitle() && $persisteContact->getTitle() !== $contact->getTitle()) {
             $persisteContact->setTitle($contact->getTitle());
         }
 
