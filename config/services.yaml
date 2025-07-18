@@ -9,3 +9,4 @@ services:
         resource: '../src/'
 
     App\Application\Port\IContactRepository: '@App\Infrastructure\ForProduction\Repository\ContactRepository'
+    App\Application\Port\IOrganizationRepository: '@App\Infrastructure\ForProduction\Repository\OrganizationRepository'
