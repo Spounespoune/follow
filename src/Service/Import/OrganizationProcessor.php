@@ -134,9 +134,9 @@ readonly class OrganizationProcessor
 
     private function organizationExistInDatabase(string $ppIdentifier): bool
     {
-        $contactRecord = $this->organizationRepository->findByTechnicalId($ppIdentifier);
+        $organizationRecord = $this->organizationRepository->findByTechnicalId($ppIdentifier);
 
-        if (null === $contactRecord) {
+        if (null === $organizationRecord) {
             return false;
         }
 
