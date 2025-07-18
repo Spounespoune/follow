@@ -47,14 +47,14 @@ readonly class OrganizationProcessor
     ) {
     }
 
-    public function processOrganizations(SymfonyStyle $io): int
+    public function processOrganizations(SymfonyStyle $io, string $filePath): int
     {
         $io->writeln('Updating organizations');
         $progress = new ProgressBar($io);
         $progress->setFormat('debug_nomax');
 
         $count = 0;
-        $reader = Reader::createFromPath('files/organizations.csv');
+        $reader = Reader::createFromPath($filePath);
         $reader->setHeaderOffset(0);
 
         if (!$this->isValidHeader($reader->getHeader())) {

@@ -21,14 +21,14 @@ readonly class ContactProcessor
     ) {
     }
 
-    public function processContacts(SymfonyStyle $io): int
+    public function processContacts(SymfonyStyle $io, string $filePath): int
     {
         $io->writeln('Updating contacts');
         $progress = new ProgressBar($io);
         $progress->setFormat('debug_nomax');
 
         $count = 0;
-        $reader = Reader::createFromPath('files/contacts.csv');
+        $reader = Reader::createFromPath($filePath);
         $reader->setHeaderOffset(0);
 
         if (!$this->isValidHeader($reader->getHeader())) {
