@@ -79,7 +79,7 @@ readonly class ContactProcessor
         $ppIdentifier = $record['Identifiant PP'];
         $familyName = $record['Nom d\'exercice'];
         $firstName = $record['Prénom d\'exercice'];
-        $ppIdentifierType = $record['Type d\'identifiant PP'];
+        $ppIdentifierType = (int) $record['Type d\'identifiant PP'];
         $title = $record['Libellé profession'];
 
         if ($this->contactExistInDatabase($record['Identifiant PP'])) {
@@ -87,7 +87,6 @@ readonly class ContactProcessor
                 $ppIdentifier,
                 $familyName,
                 $firstName,
-                $ppIdentifierType,
                 $title,
             );
         } else {

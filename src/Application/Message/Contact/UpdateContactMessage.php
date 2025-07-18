@@ -8,9 +8,8 @@ class UpdateContactMessage
 {
     public function __construct(
         public string $ppIdentifier,
-        public ?string $familyName,
+        public ?string $familyName = null,
         public ?string $firstName = null,
-        public ?string $ppIdentifierType = null,
         public ?string $title = null,
     ) {
     }

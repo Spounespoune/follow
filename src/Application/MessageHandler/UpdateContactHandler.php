@@ -27,9 +27,9 @@ readonly class UpdateContactHandler
         $contact = Contact::create(
             $contactMessage->ppIdentifier,
             $contactMessage->familyName,
-            $contactMessage->ppIdentifierType,
-            $contactMessage->title,
+            $persisteContact->getPpIdentifierType(), // ppIdentifier and ppIdentifierType are link, updated not possible
             $contactMessage->firstName,
+            $contactMessage->title,
         );
 
         if ($persisteContact->identicalTo($contact)) {

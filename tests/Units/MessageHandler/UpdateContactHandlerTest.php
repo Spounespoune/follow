@@ -41,4 +41,27 @@ class UpdateContactHandlerTest extends TestCase
         $this->assertNotNull($contact);
         $this->assertEquals('family_name_test_update', $contact->getFamilyName());
     }
+
+    public function testUpdateContactWithAllFields()
+    {
+        $updateContactMessage = new UpdateContactMessage(
+            '10000001015',
+            'Updated Family Name',
+            'Updated First Name',
+            'Updated Title'
+        );
+
+        $updateContactUseCase = ($this->updateContactHandler)($updateContactMessage);
+
+        $this->assertTrue($updateContactUseCase);
+
+        /** @var Contact $contact */
+        $contact = $this->contactRepository->findByPpIdentifier('10000001015');
+
+        $this->assertNotNull($contact);
+        $this->assertEquals('Updated Family Name', $contact->getFamilyName());
+        $this->assertEquals('Updated First Name', $contact->getFirstName());
+        $this->assertEquals('Updated Title', $contact->getTitle());
+        $this->assertEquals('10000001015', $contact->getPpIdentifier());
+    }
 }

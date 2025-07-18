@@ -61,7 +61,7 @@ class Contact implements HashableInterface
     public static function create(
         string $ppIdentifier,
         string $familyName,
-        ?string $ppIdentifierType = null,
+        ?int $ppIdentifierType = null,
         ?string $firstName = null,
         ?string $title = null,
     ): Contact {
@@ -103,7 +103,7 @@ class Contact implements HashableInterface
         return $this->ppIdentifierType;
     }
 
-    public function setPpIdentifierType($ppIdentifierType): static
+    public function setPpIdentifierType(?int $ppIdentifierType): static
     {
         $this->ppIdentifierType = $ppIdentifierType;
 

@@ -23,7 +23,7 @@ readonly class CreateContactHandler
             ->setFamilyName($contactMessage->familyName)
             ->setPpIdentifier($contactMessage->ppIdentifier)
             ->setFirstName($contactMessage->firstName)
-            ->setPpIdentifierType($contactMessage->ppIdentifierType)
+            ->setPpIdentifierType((int) $contactMessage->ppIdentifierType)
             ->setTitle($contactMessage->title)
         ;
 

@@ -23,7 +23,8 @@ class CreateContactHandlerTest extends TestCase
     {
         $createContactMessage = new CreateContactMessage(
             '10000001015',
-            'family_name_test'
+            'family_name_test',
+            ppIdentifierType: Contact::PP_IDENTIFIER_TYPE_RPPS
         );
         $createContactUseCase = ($this->createContactUseCase)($createContactMessage);
 
