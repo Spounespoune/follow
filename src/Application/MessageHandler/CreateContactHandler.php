@@ -29,8 +29,7 @@ readonly class CreateContactHandler
         ;
 
         try {
-            $this->contactRepository->save($contact);
-            $this->contactRepository->clear();
+            $this->contactRepository->persist($contact);
         } catch (\Exception $e) {
             return HandlerResult::failure($e->getMessage());
         }

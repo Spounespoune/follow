@@ -55,29 +55,7 @@ readonly class ContactProcessor
             return Command::FAILURE;
         }
 
-        foreach ($reader->getRecords() as $i => $record) {
-            $progress->advance();
-            $contactMessage = $this->getContactMessage($record);
-
-            try {
-                $envelope = $this->messageBus->dispatch($contactMessage);
-                $result = $envelope->last(HandledStamp::class)->getResult();
-
-                if ($result instanceof HandlerResult
-                    && false === $result->success) {
-                    $this->importLogger->logError('contact', $i, $record[self::PP_IDENTIFIER], $result->errorMessage);
-                }
-                ++$count;
-            } catch (\Exception $e) {
-                $this->importLogger->logError('contact', $i, $record[self::PP_IDENTIFIER], $e->getMessage());
-            }
-
-            unset($record);
-
-            if (0 === $i % 100) {
-                gc_collect_cycles();
-            }
-        }
+        $count = $this->persistContact($reader, $progress, $count);
 
         $progress->finish();
 
@@ -124,5 +102,52 @@ readonly class ContactProcessor
         }
 
         return true;
+    }
+
+    private function flushAndClear(): void
+    {
+        $this->contactRepository->flush();
+        $this->contactRepository->clear();
+    }
+
+    private function persistContact(Reader $reader, ProgressBar $progress, int $count): int
+    {
+        $batch = 0;
+        $batchSize = 100;
+
+        foreach ($reader->getRecords() as $i => $record) {
+            $progress->advance();
+            $contactMessage = $this->getContactMessage($record);
+
+            try {
+                $envelope = $this->messageBus->dispatch($contactMessage);
+                $result = $envelope->last(HandledStamp::class)->getResult();
+
+                if ($result instanceof HandlerResult
+                    && false === $result->success) {
+                    $this->importLogger->logError('contact', $i, $record[self::PP_IDENTIFIER], $result->errorMessage);
+                }
+                ++$count;
+                ++$batch;
+            } catch (\Exception $e) {
+                $this->importLogger->logError('contact', $i, $record[self::PP_IDENTIFIER], $e->getMessage());
+            }
+
+            if ($batch >= $batchSize) {
+                $this->flushAndClear();
+            }
+
+            unset($record);
+
+            if (0 === $i % $batchSize) {
+                gc_collect_cycles();
+            }
+        }
+
+        if ($batch > 0) {
+            $this->flushAndClear();
+        }
+
+        return $count;
     }
 }
