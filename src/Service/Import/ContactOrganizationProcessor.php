@@ -52,10 +52,9 @@ class ContactOrganizationProcessor
 
         foreach ($reader->getRecords() as $i => $record) {
             $progress->advance();
-            dump($this->canLinkContactToOrganization($record));
+
             if ($this->canLinkContactToOrganization($record)) {
                 try {
-                    dump('add');
                     $this->contactRecord->addOrganization($this->organizationRecord);
                     $this->contactRepository->save($this->contactRecord);
                     ++$count;
