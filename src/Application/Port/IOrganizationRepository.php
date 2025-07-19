@@ -15,7 +15,7 @@ interface IOrganizationRepository
 
     public function save(Organization $organization): void;
 
-    public function persist(Contact $contact): void;
+    public function persist(Organization $contact): void;
 
     public function flush(): void;
 }
