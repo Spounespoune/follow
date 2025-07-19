@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\MessageHandler;
 
 use App\Application\Message\Organization\CreateOrganizationMessage;
+use App\Application\Model\HandlerResult;
 use App\Application\Port\IOrganizationRepository;
 use App\Entity\Address;
 use App\Entity\Organization;
@@ -13,11 +14,11 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 #[AsMessageHandler]
 readonly class CreateOrganizationHandler
 {
-    public function __construct(private IOrganizationRepository $IOrganizationRepository)
+    public function __construct(private IOrganizationRepository $organizationRepository)
     {
     }
 
-    public function __invoke(CreateOrganizationMessage $createOrganizationMessage): void
+    public function __invoke(CreateOrganizationMessage $createOrganizationMessage): HandlerResult
     {
         $address = new Address();
         $address
@@ -37,6 +38,12 @@ readonly class CreateOrganizationHandler
             ->setPrivateFromString($createOrganizationMessage->private)
         ;
 
-        $this->IOrganizationRepository->save($organization);
+        try {
+            $this->organizationRepository->save($organization);
+        } catch (\Exception $e) {
+            return HandlerResult::failure($e->getMessage());
+        }
+
+        return HandlerResult::success();
     }
 }

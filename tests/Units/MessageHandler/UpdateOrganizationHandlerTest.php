@@ -52,7 +52,9 @@ class UpdateOrganizationHandlerTest extends TestCase
             'Paris'
         );
 
-        ($this->updateOrganizationHandler)($updateOrganizationMessage);
+        $result = ($this->updateOrganizationHandler)($updateOrganizationMessage);
+
+        $this->assertTrue($result->success);
 
         /** @var Organization $organization */
         $organization = $this->organizationRepository->findByTechnicalId('ORG001');
@@ -75,7 +77,9 @@ class UpdateOrganizationHandlerTest extends TestCase
             'Minimal Update'
         );
 
-        ($this->updateOrganizationHandler)($updateOrganizationMessage);
+        $result = ($this->updateOrganizationHandler)($updateOrganizationMessage);
+
+        $this->assertTrue($result->success);
 
         /** @var Organization $organization */
         $organization = $this->organizationRepository->findByTechnicalId('ORG001');
@@ -115,7 +119,9 @@ class UpdateOrganizationHandlerTest extends TestCase
             'Paris'
         );
 
-        ($this->updateOrganizationHandler)($updateOrganizationMessage);
+        $result = ($this->updateOrganizationHandler)($updateOrganizationMessage);
+
+        $this->assertTrue($result->success);
 
         /** @var Organization $organization */
         $organization = $this->organizationRepository->findByTechnicalId('ORG001');

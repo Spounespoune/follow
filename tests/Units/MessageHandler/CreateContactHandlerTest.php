@@ -26,9 +26,9 @@ class CreateContactHandlerTest extends TestCase
             'family_name_test',
             ppIdentifierType: Contact::PP_IDENTIFIER_TYPE_RPPS
         );
-        $createContactUseCase = ($this->createContactUseCase)($createContactMessage);
+        $result = ($this->createContactUseCase)($createContactMessage);
 
-        $this->assertTrue($createContactUseCase);
+        $this->assertTrue($result->success);
 
         /** @var Contact $contact */
         $contact = $this->contactRepository->findByPpIdentifier('10000001015');

@@ -31,9 +31,9 @@ class UpdateContactHandlerTest extends TestCase
             '10000001015',
             'family_name_test_update'
         );
-        $updateContactUseCase = ($this->updateContactHandler)($updateContactMessage);
+        $result = ($this->updateContactHandler)($updateContactMessage);
 
-        $this->assertTrue($updateContactUseCase);
+        $this->assertTrue($result->success);
 
         /** @var Contact $contact */
         $contact = $this->contactRepository->findByPpIdentifier('10000001015');
@@ -51,9 +51,9 @@ class UpdateContactHandlerTest extends TestCase
             'Updated Title'
         );
 
-        $updateContactUseCase = ($this->updateContactHandler)($updateContactMessage);
+        $result = ($this->updateContactHandler)($updateContactMessage);
 
-        $this->assertTrue($updateContactUseCase);
+        $this->assertTrue($result->success);
 
         /** @var Contact $contact */
         $contact = $this->contactRepository->findByPpIdentifier('10000001015');

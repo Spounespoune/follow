@@ -2,22 +2,40 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Import;
+namespace App\Service\Import\Processor;
 
 use App\Application\Message\Contact\CreateContactMessage;
 use App\Application\Message\Contact\UpdateContactMessage;
+use App\Application\Model\HandlerResult;
 use App\Application\Port\IContactRepository;
+use App\Service\Import\ImportLogger;
 use League\Csv\Reader;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Stamp\HandledStamp;
 
 readonly class ContactProcessor
 {
+    private const string PP_IDENTIFIER = 'Identifiant PP';
+    private const string PP_IDENTIFIER_TYPE = 'Type d\'identifiant PP';
+    private const string TITLE = 'Libellé profession';
+    private const string FAMILY_NAME = 'Nom d\'exercice';
+    private const string FIRST_NAME = 'Prénom d\'exercice';
+
+    private const array REQUIRED_HEADERS = [
+        self::PP_IDENTIFIER,
+        self::FAMILY_NAME,
+        self::FIRST_NAME,
+        self::PP_IDENTIFIER_TYPE,
+        self::TITLE,
+    ];
+
     public function __construct(
         private MessageBusInterface $messageBus,
         private IContactRepository $contactRepository,
+        private ImportLogger $importLogger,
     ) {
     }
 
@@ -42,11 +60,16 @@ readonly class ContactProcessor
             $contactMessage = $this->getContactMessage($record);
 
             try {
-                $this->messageBus->dispatch($contactMessage);
+                $envelope = $this->messageBus->dispatch($contactMessage);
+                $result = $envelope->last(HandledStamp::class)->getResult();
+
+                if ($result instanceof HandlerResult
+                    && false === $result->success) {
+                    $this->importLogger->logError('contact', $i, $record[self::PP_IDENTIFIER], $result->errorMessage);
+                }
                 ++$count;
             } catch (\Exception $e) {
-                // TODO maybe log instead show error on terminal and use $i
-                $io->error($e->getMessage());
+                $this->importLogger->logError('contact', $i, $record[self::PP_IDENTIFIER], $e->getMessage());
             }
 
             unset($record);
@@ -63,26 +86,18 @@ readonly class ContactProcessor
 
     private function isValidHeader(array $header): bool
     {
-        $requiredHeaders = [
-            'Identifiant PP',
-            'Nom d\'exercice',
-            'Prénom d\'exercice',
-            'Type d\'identifiant PP',
-            'Libellé profession',
-        ];
-
-        return count(array_intersect($requiredHeaders, $header)) === count($requiredHeaders);
+        return count(array_intersect(self::REQUIRED_HEADERS, $header)) === count(self::REQUIRED_HEADERS);
     }
 
     private function getContactMessage(mixed $record): UpdateContactMessage|CreateContactMessage
     {
-        $ppIdentifier = $record['Identifiant PP'];
-        $familyName = $record['Nom d\'exercice'];
-        $firstName = $record['Prénom d\'exercice'];
-        $ppIdentifierType = (int) $record['Type d\'identifiant PP'];
-        $title = $record['Libellé profession'];
+        $ppIdentifier = $record[self::PP_IDENTIFIER];
+        $familyName = $record[self::FAMILY_NAME];
+        $firstName = $record[self::FIRST_NAME];
+        $ppIdentifierType = (int) $record[self::PP_IDENTIFIER_TYPE];
+        $title = $record[self::TITLE];
 
-        if ($this->contactExistInDatabase($record['Identifiant PP'])) {
+        if ($this->contactExistInDatabase($record[self::PP_IDENTIFIER])) {
             return new UpdateContactMessage(
                 $ppIdentifier,
                 $familyName,

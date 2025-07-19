@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\MessageHandler;
 
 use App\Application\Message\Contact\CreateContactMessage;
+use App\Application\Model\HandlerResult;
 use App\Application\Port\IContactRepository;
 use App\Entity\Contact;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -16,7 +17,7 @@ readonly class CreateContactHandler
     {
     }
 
-    public function __invoke(CreateContactMessage $contactMessage): bool
+    public function __invoke(CreateContactMessage $contactMessage): HandlerResult
     {
         $contact = new Contact();
         $contact
@@ -31,10 +32,9 @@ readonly class CreateContactHandler
             $this->contactRepository->save($contact);
             $this->contactRepository->clear();
         } catch (\Exception $e) {
-            // TODO Log error
-            return false;
+            return HandlerResult::failure($e->getMessage());
         }
 
-        return true;
+        return HandlerResult::success();
     }
 }

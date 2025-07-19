@@ -26,7 +26,9 @@ class CreateOrganizationHandlerTest extends TestCase
             'F010000024',
             'organisation_name',
         );
-        ($this->createOrganizationHandler)($createOrganizationMessage);
+        $result = ($this->createOrganizationHandler)($createOrganizationMessage);
+
+        $this->assertTrue($result->success);
 
         $organization = $this->fixedOrganizationRepository->findByTechnicalId('F010000024');
 

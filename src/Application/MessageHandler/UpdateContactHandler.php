@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\MessageHandler;
 
 use App\Application\Message\Contact\UpdateContactMessage;
+use App\Application\Model\HandlerResult;
 use App\Application\Port\IContactRepository;
 use App\Entity\Contact;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -16,36 +17,35 @@ readonly class UpdateContactHandler
     {
     }
 
-    public function __invoke(UpdateContactMessage $contactMessage): bool
+    public function __invoke(UpdateContactMessage $contactMessage): HandlerResult
     {
-        $persisteContact = $this->contactRepository->findByPpIdentifier($contactMessage->ppIdentifier);
+        $contactPersist = $this->contactRepository->findByPpIdentifier($contactMessage->ppIdentifier);
 
-        if (null === $persisteContact) {
+        if (null === $contactPersist) {
             throw new \Exception('Contact not found');
         }
 
         $incomingContact = Contact::create(
             $contactMessage->ppIdentifier,
             $contactMessage->familyName,
-            $persisteContact->getPpIdentifierType(), // ppIdentifier and ppIdentifierType are link, updated not possible
+            $contactPersist->getPpIdentifierType(), // ppIdentifier and ppIdentifierType are link, updated not possible
             $contactMessage->firstName,
             $contactMessage->title,
         );
 
-        if ($persisteContact->identicalTo($incomingContact)) {
-            return false;
+        if ($contactPersist->identicalTo($incomingContact)) {
+            return HandlerResult::success();
         }
 
-        $this->updateContactFields($persisteContact, $incomingContact);
+        $this->updateContactFields($contactPersist, $incomingContact);
 
         try {
-            $this->contactRepository->persist($persisteContact);
+            $this->contactRepository->persist($contactPersist);
         } catch (\Exception $e) {
-            // TODO Log error
-            return false;
+            return HandlerResult::failure($e->getMessage());
         }
 
-        return true;
+        return HandlerResult::success();
     }
 
     public function updateContactFields(Contact $persisteContact, Contact $contact): void

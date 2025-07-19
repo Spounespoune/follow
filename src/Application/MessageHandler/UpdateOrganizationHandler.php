@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\MessageHandler;
 
 use App\Application\Message\Organization\UpdateOrganizationMessage;
+use App\Application\Model\HandlerResult;
 use App\Application\Port\IOrganizationRepository;
 use App\Entity\Address;
 use App\Entity\Organization;
@@ -17,7 +18,7 @@ readonly class UpdateOrganizationHandler
     {
     }
 
-    public function __invoke(UpdateOrganizationMessage $updateOrganizationMessage): void
+    public function __invoke(UpdateOrganizationMessage $updateOrganizationMessage): HandlerResult
     {
         $organizationPersist = $this->organizationRepository->findByTechnicalId($updateOrganizationMessage->technicalId);
 
@@ -43,7 +44,7 @@ readonly class UpdateOrganizationHandler
         $organization->setPrivateFromString($updateOrganizationMessage->private);
 
         if ($organizationPersist->identicalTo($organization)) {
-            return;
+            return HandlerResult::success();
         }
 
         $needUpdateAddress = $this->updateAdresseFields($organizationPersist->getAddress(), $address);
@@ -54,7 +55,13 @@ readonly class UpdateOrganizationHandler
 
         $this->updateOrganizationFields($organizationPersist, $organization);
 
-        $this->organizationRepository->persist($organizationPersist);
+        try {
+            $this->organizationRepository->persist($organizationPersist);
+        } catch (\Exception $e) {
+            return HandlerResult::failure($e->getMessage());
+        }
+
+        return HandlerResult::success();
     }
 
     private function updateAdresseFields(Address $persistAddress, Address $address): bool

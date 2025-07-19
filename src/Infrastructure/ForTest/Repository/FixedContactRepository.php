@@ -45,8 +45,6 @@ class FixedContactRepository implements IContactRepository
         // Noting
     }
 
-
-
     public function clear(): void
     {
         // Nothing

@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Import;
+namespace App\Service\Import\Processor;
 
 use App\Application\Port\IContactRepository;
 use App\Application\Port\IOrganizationRepository;
 use App\Entity\Contact;
 use App\Entity\Organization;
+use App\Service\Import\ImportLogger;
 use League\Csv\Reader;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -27,8 +28,9 @@ class ContactOrganizationProcessor
     private ?Organization $organizationRecord;
 
     public function __construct(
-        private IContactRepository $contactRepository,
-        private IOrganizationRepository $organizationRepository,
+        private readonly IContactRepository $contactRepository,
+        private readonly IOrganizationRepository $organizationRepository,
+        private readonly ImportLogger $importLogger,
     ) {
         $this->contactRecord = null;
         $this->organizationRecord = null;
@@ -56,11 +58,10 @@ class ContactOrganizationProcessor
             if ($this->canLinkContactToOrganization($record)) {
                 try {
                     $this->contactRecord->addOrganization($this->organizationRecord);
-                    $this->contactRepository->save($this->contactRecord);
+                    $this->contactRepository->flush();
                     ++$count;
                 } catch (\Exception $e) {
-                    // TODO maybe log instead show error on terminal and use $i
-                    $io->error($e->getMessage());
+                    $this->importLogger->logError('contact_organization', $i, $record[self::IDENTIFIANT_PP], $e->getMessage());
                 }
             }
 

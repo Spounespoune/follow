@@ -2,16 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Import;
+namespace App\Service\Import\Processor;
 
 use App\Application\Message\Organization\CreateOrganizationMessage;
 use App\Application\Message\Organization\UpdateOrganizationMessage;
+use App\Application\Model\HandlerResult;
 use App\Application\Port\IOrganizationRepository;
+use App\Service\Import\ImportLogger;
 use League\Csv\Reader;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Stamp\HandledStamp;
 
 readonly class OrganizationProcessor
 {
@@ -44,6 +47,7 @@ readonly class OrganizationProcessor
     public function __construct(
         private MessageBusInterface $messageBus,
         private IOrganizationRepository $organizationRepository,
+        private ImportLogger $importLogger,
     ) {
     }
 
@@ -69,11 +73,16 @@ readonly class OrganizationProcessor
             $organisationMessage = $this->getOrganisationMessage($record);
 
             try {
-                $this->messageBus->dispatch($organisationMessage);
+                $envelope = $this->messageBus->dispatch($organisationMessage);
+                $result = $envelope->last(HandledStamp::class)->getResult();
+
+                if ($result instanceof HandlerResult
+                    && false === $result->success) {
+                    $this->importLogger->logError('organization', $i, $record[self::TECHNICAL_ID], $result->errorMessage);
+                }
                 ++$count;
             } catch (\Exception $e) {
-                // TODO maybe log instead show error on terminal and use $i
-                $io->error($e->getMessage());
+                $this->importLogger->logError('organization', $i, $record[self::TECHNICAL_ID], $e->getMessage());
             }
 
             unset($record);

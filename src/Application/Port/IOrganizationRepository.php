@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Application\Port;
 
-use App\Entity\Contact;
 use App\Entity\Organization;
 
 interface IOrganizationRepository

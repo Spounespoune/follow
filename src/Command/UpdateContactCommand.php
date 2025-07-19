@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\Application\Message\Contact\DeleteContactMessage;
-use App\Service\Import\ContactOrganizationProcessor;
-use App\Service\Import\ContactProcessor;
-use App\Service\Import\OrganizationProcessor;
+use App\Service\Import\Processor\ContactOrganizationProcessor;
+use App\Service\Import\Processor\ContactProcessor;
+use App\Service\Import\Processor\OrganizationProcessor;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
