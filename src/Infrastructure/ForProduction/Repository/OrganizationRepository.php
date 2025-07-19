@@ -42,14 +42,22 @@ class OrganizationRepository extends ServiceEntityRepository implements IOrganiz
     public function delete(Organization $organization): void
     {
         $organization->deletedAt = new \DateTimeImmutable();
-        $this->save($organization);
+        $this->flush();
     }
 
     public function save(Organization $organization): void
     {
-        $em = $this->getEntityManager();
-        // TODO: Not performant - persist() is unnecessary for updates
-        $em->persist($organization);
-        $em->flush();
+        $this->persist($organization);
+        $this->flush();
+    }
+
+    public function persist(Organization $organization): void
+    {
+        $this->getEntityManager()->persist($organization);
+    }
+
+    public function flush(): void
+    {
+        $this->getEntityManager()->flush();
     }
 }

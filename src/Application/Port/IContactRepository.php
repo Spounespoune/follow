@@ -16,5 +16,9 @@ interface IContactRepository
 
     public function save(Contact $contact): void;
 
+    public function persist(Contact $contact): void;
+
+    public function flush(): void;
+
     public function clear(): void;
 }

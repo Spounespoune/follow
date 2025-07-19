@@ -43,15 +43,23 @@ class ContactRepository extends ServiceEntityRepository implements IContactRepos
     public function delete(Contact $contact): void
     {
         $contact->deletedAt = new \DateTimeImmutable();
-        $this->save($contact);
+        $this->flush();
     }
 
     public function save(Contact $contact): void
     {
-        $em = $this->getEntityManager();
-        // TODO: Not performant - persist() is unnecessary for updates
-        $em->persist($contact);
-        $em->flush();
+        $this->persist($contact);
+        $this->flush();
+    }
+
+    public function persist(Contact $contact): void
+    {
+        $this->getEntityManager()->persist($contact);
+    }
+
+    public function flush(): void
+    {
+        $this->getEntityManager()->flush();
     }
 
     public function clear(): void

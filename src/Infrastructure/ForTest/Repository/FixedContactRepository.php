@@ -31,8 +31,21 @@ class FixedContactRepository implements IContactRepository
 
     public function save(Contact $contact): void
     {
+        $this->persist($contact);
+        $this->flush();
+    }
+
+    public function persist(Contact $contact): void
+    {
         $this->database[] = $contact;
     }
+
+    public function flush(): void
+    {
+        // Noting
+    }
+
+
 
     public function clear(): void
     {

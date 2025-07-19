@@ -18,13 +18,24 @@ class FixedOrganizationRepository implements IOrganizationRepository
         return array_find($this->database, fn (Organization $organization) => $organization->getTechnicalId() === $technicalId);
     }
 
+    public function findContactsNotUpdatedSinceWeek(int $dayForDeletion, \DateTimeImmutable $executionDatetime): array
+    {
+        return array_filter($this->database, fn (Organization $organization) => $organization->updatedAt->modify('+'.$dayForDeletion.' days') <= $executionDatetime);
+    }
+
     public function save(Organization $organization): void
+    {
+        $this->persist($organization);
+        $this->flush();
+    }
+
+    public function persist(Organization $organization): void
     {
         $this->database[] = $organization;
     }
 
-    public function findContactsNotUpdatedSinceWeek(int $dayForDeletion, \DateTimeImmutable $executionDatetime): array
+    public function flush(): void
     {
-        return array_filter($this->database, fn (Organization $organization) => $organization->updatedAt->modify('+'.$dayForDeletion.' days') <= $executionDatetime);
+        // Noting
     }
 }

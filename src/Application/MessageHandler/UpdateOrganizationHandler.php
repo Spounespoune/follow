@@ -54,7 +54,7 @@ readonly class UpdateOrganizationHandler
 
         $this->updateOrganizationFields($organizationPersist, $organization);
 
-        $this->organizationRepository->save($organization);
+        $this->organizationRepository->persist($organizationPersist);
     }
 
     private function updateAdresseFields(Address $persistAddress, Address $address): bool

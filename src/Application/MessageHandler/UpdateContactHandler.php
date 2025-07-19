@@ -24,7 +24,7 @@ readonly class UpdateContactHandler
             throw new \Exception('Contact not found');
         }
 
-        $contact = Contact::create(
+        $incomingContact = Contact::create(
             $contactMessage->ppIdentifier,
             $contactMessage->familyName,
             $persisteContact->getPpIdentifierType(), // ppIdentifier and ppIdentifierType are link, updated not possible
@@ -32,14 +32,14 @@ readonly class UpdateContactHandler
             $contactMessage->title,
         );
 
-        if ($persisteContact->identicalTo($contact)) {
+        if ($persisteContact->identicalTo($incomingContact)) {
             return false;
         }
 
-        $this->updateContactFields($persisteContact, $contact);
+        $this->updateContactFields($persisteContact, $incomingContact);
 
         try {
-            $this->contactRepository->save($contact);
+            $this->contactRepository->persist($persisteContact);
         } catch (\Exception $e) {
             // TODO Log error
             return false;
